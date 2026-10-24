@@ -1,43 +1,68 @@
+```html
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="description" content="{% block meta_description %}ContentFlow — thoughtful articles on technology and development.{% endblock %}">
+    <meta name="theme-color" content="#F7F7F5">
 
-    <title>{% block title %}ContentFlow | Ideas worth sharing{% endblock %}</title>
+    <title>{% block title %}ContentFlow — Ideas for curious developers{% endblock %}</title>
+
+    <meta
+        name="description"
+        content="{% block meta_description %}Thoughtful notes on technology, software, and building things.{% endblock %}"
+    >
 
     <link rel="stylesheet" href="{% static 'content/css/style.css' %}">
-    {% block extra_head %}{% endblock %}
 </head>
+
 <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
     <header class="site-header">
         <div class="container header-inner">
-            <a class="brand" href="{% url 'content:article_list' %}">
-                Content<span>Flow</span>
+
+            <a
+                class="wordmark"
+                href="{% url 'content:article_list' %}"
+                aria-label="ContentFlow home"
+            >
+                <span class="wordmark-mark" aria-hidden="true">C</span>
+                <span>ContentFlow<span class="wordmark-period">.</span></span>
             </a>
 
-            <nav class="main-nav" aria-label="Main navigation">
+            <nav class="site-nav" aria-label="Main navigation">
                 <a href="{% url 'content:article_list' %}">Articles</a>
-                <a href="#about">About</a>
+                <a href="#site-footer">About</a>
             </nav>
+
         </div>
     </header>
 
-    <main class="container main-content">
+    <main id="main-content">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="site-footer" id="about">
+    <footer class="site-footer" id="site-footer">
         <div class="container footer-inner">
-            <a class="brand footer-brand" href="{% url 'content:article_list' %}">
-                Content<span>Flow</span>
+
+            <a
+                class="footer-wordmark"
+                href="{% url 'content:article_list' %}"
+            >
+                ContentFlow<span>.</span>
             </a>
-            <p>A space for ideas, knowledge, and thoughtful writing.</p>
-            <small>&copy; {% now "Y" %} ContentFlow</small>
+
+            <p>Ideas, carefully written. Built for curious minds.</p>
+
+            <span class="footer-note">
+                © {% now "Y" %} ContentFlow
+            </span>
+
         </div>
     </footer>
 </body>
 </html>
+```

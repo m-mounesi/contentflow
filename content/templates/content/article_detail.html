@@ -1,32 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ article.title }} | ContentFlow</title>
-</head>
-<body>
-    <article>
-        <h1>{{ article.title }}</h1>
 
-        <p>
-            Category: {{ article.category.name }}
-        </p>
+{% extends "content/base.html" %}
 
-        <p>
-            Published: {{ article.published_at|date:"Y-m-d H:i" }}
-        </p>
+{% block title %}{{ article.title }} — ContentFlow{% endblock %}
 
-        <p>
-            Last updated: {{ article.updated_at|date:"Y-m-d H:i" }}
-        </p>
+{% block meta_description %}{{ article.title }} — an article from ContentFlow.{% endblock %}
 
-        <div>
+{% block content %}
+
+<article class="article-page">
+    <div class="container article-container">
+
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a href="{% url 'content:article_list' %}">Journal</a>
+
+            <span aria-hidden="true">/</span>
+
+            {% if article.category %}
+                <span>{{ article.category.name }}</span>
+            {% else %}
+                <span>Article</span>
+            {% endif %}
+        </nav>
+
+
+        <header class="article-header">
+
+            {% if article.category %}
+                <span class="category-label">
+                    {{ article.category.name }}
+                </span>
+            {% endif %}
+
+            <h1>{{ article.title }}</h1>
+
+            <div class="article-meta">
+
+                {% if article.published_at %}
+                    <time datetime="{{ article.published_at|date:'c' }}">
+                        Published {{ article.published_at|date:"F j, Y" }}
+                    </time>
+                {% endif %}
+
+                {% if article.updated_at and article.updated_at != article.created_at %}
+                    <span class="meta-divider" aria-hidden="true">·</span>
+
+                    <span>
+                        Updated {{ article.updated_at|date:"F j, Y" }}
+                    </span>
+                {% endif %}
+
+            </div>
+
+        </header>
+
+
+        <div class="article-body">
             {{ article.body|linebreaks }}
         </div>
-    </article>
 
-    <a href="{% url 'content:article_list' %}">
-        Back to articles
-    </a>
-</body>
-</html>
+
+        <footer class="article-end">
+            <span class="article-end-mark" aria-hidden="true">✳</span>
+            <p>End of article</p>
+        </footer>
+
+
+        <a class="back-link" href="{% url 'content:article_list' %}">
+            <span aria-hidden="true">←</span>
+            Back to all articles
+        </a>
+
+    </div>
+</article>
+
+{% endblock %}

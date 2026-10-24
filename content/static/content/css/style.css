@@ -1,0 +1,398 @@
+
+/* =========================
+   1. Design Tokens
+========================= */
+
+:root {
+    --color-bg: #f8f7f4;
+    --color-surface: #ffffff;
+    --color-text: #20231f;
+    --color-muted: #777a72;
+    --color-primary: #55745b;
+    --color-primary-dark: #3e5944;
+    --color-border: #e7e5df;
+
+    --font-main: Arial, Helvetica, sans-serif;
+
+    --container-width: 1080px;
+
+    --radius-sm: 8px;
+    --radius-md: 14px;
+
+    --shadow-card: 0 8px 24px rgba(32, 35, 31, 0.04);
+}
+
+/* =========================
+   2. Reset & Base
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-main);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 4px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.container {
+    width: min(var(--container-width), calc(100% - 48px));
+    margin-inline: auto;
+}
+
+/* =========================
+   3. Header
+========================= */
+
+.site-header {
+    background: rgba(248, 247, 244, 0.94);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.header-inner {
+    min-height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.brand {
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.brand span {
+    color: var(--color-primary);
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.main-nav a {
+    color: var(--color-muted);
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.main-nav a:hover {
+    color: var(--color-primary);
+}
+
+/* =========================
+   4. Main Content
+========================= */
+
+.main-content {
+    min-height: 65vh;
+    padding-top: 64px;
+    padding-bottom: 80px;
+}
+
+/* =========================
+   5. Footer
+========================= */
+
+.site-footer {
+    border-top: 1px solid var(--color-border);
+    padding: 36px 0;
+}
+
+.footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.footer-brand {
+    font-size: 20px;
+}
+
+.footer-inner p {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 13px;
+}
+
+.footer-inner small {
+    color: var(--color-muted);
+    font-size: 12px;
+}
+
+/* =========================
+   6. Responsive
+========================= */
+
+@media (max-width: 600px) {
+    .container {
+        width: calc(100% - 32px);
+    }
+
+    .header-inner {
+        min-height: 72px;
+    }
+
+    .brand {
+        font-size: 22px;
+    }
+
+    .main-nav {
+        gap: 16px;
+    }
+
+    .main-content {
+        padding-top: 40px;
+        padding-bottom: 56px;
+    }
+
+    .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================
+   7. Article List
+========================= */
+
+.page-heading {
+    max-width: 720px;
+    margin-bottom: 48px;
+}
+
+.eyebrow {
+    margin: 0 0 12px;
+    color: var(--color-primary);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.page-heading h1 {
+    margin: 0;
+    font-size: clamp(36px, 5vw, 58px);
+    line-height: 1.12;
+    letter-spacing: -2px;
+}
+
+.page-description {
+    max-width: 560px;
+    margin: 20px 0 0;
+    color: var(--color-muted);
+    font-size: 17px;
+}
+
+.article-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.article-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 28px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-3px);
+    border-color: #d4d9d0;
+    box-shadow: 0 14px 32px rgba(32, 35, 31, 0.07);
+}
+
+.article-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    color: var(--color-muted);
+    font-size: 12px;
+}
+
+.article-category {
+    padding: 4px 10px;
+    color: var(--color-primary-dark);
+    background: #edf2eb;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+}
+
+.article-card h2 {
+    margin: 22px 0 10px;
+    font-size: 24px;
+    line-height: 1.3;
+    letter-spacing: -0.6px;
+}
+
+.article-card h2 a:hover {
+    color: var(--color-primary);
+}
+
+.article-excerpt {
+    margin: 0 0 24px;
+    color: var(--color-muted);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.read-more {
+    margin-top: auto;
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.read-more span {
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.read-more:hover span {
+    transform: translateX(4px);
+}
+
+/* =========================
+   8. Pagination
+========================= */
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 44px;
+}
+
+.pagination-link {
+    padding: 9px 15px;
+    color: var(--color-primary-dark);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.pagination-link:hover {
+    background: #edf2eb;
+}
+
+.pagination-status {
+    color: var(--color-muted);
+    font-size: 13px;
+}
+
+/* =========================
+   9. Empty State
+========================= */
+
+.empty-state {
+    grid-column: 1 / -1;
+    padding: 48px 24px;
+    text-align: center;
+    background: var(--color-surface);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.empty-state h2 {
+    margin-top: 0;
+}
+
+.empty-state p {
+    color: var(--color-muted);
+}
+
+/* =========================
+   10. Article List Responsive
+========================= */
+
+@media (max-width: 700px) {
+    .article-list {
+        grid-template-columns: 1fr;
+    }
+
+    .page-heading {
+        margin-bottom: 32px;
+    }
+
+    .page-heading h1 {
+        letter-spacing: -1px;
+    }
+
+    .article-card {
+        padding: 22px;
+    }
+
+    .article-card h2 {
+        font-size: 22px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

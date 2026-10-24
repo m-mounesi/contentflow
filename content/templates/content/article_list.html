@@ -1,35 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>ContentFlow | Articles</title>
-</head>
-<body>
-    <h1>Articles</h1>
 
+{% extends "content/base.html" %}
+
+{% block title %}Articles | ContentFlow{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <p class="eyebrow">THE CONTENTFLOW JOURNAL</p>
+
+    <h1>Ideas worth exploring.</h1>
+
+    <p class="page-description">
+        Thoughts, tutorials, and insights on technology and development.
+    </p>
+</section>
+
+<section class="article-list" aria-label="Published articles">
     {% for article in page_obj %}
-        <article>
-            <a href="{% url 'content:article_detail' slug=article.slug %}">
-                <h2>{{ article.title }}</h2>
+        <article class="article-card">
+            <div class="article-meta">
+                <span class="article-category">
+                    {{ article.category.name }}
+                </span>
+
+                <time datetime="{{ article.published_at|date:'Y-m-d' }}">
+                    {{ article.published_at|date:"M d, Y" }}
+                </time>
+            </div>
+
+            <h2>
+                <a href="{% url 'content:article_detail' slug=article.slug %}">
+                    {{ article.title }}
+                </a>
+            </h2>
+
+            <p class="article-excerpt">
+                {{ article.body|striptags|truncatewords:25 }}
+            </p>
+
+            <a
+                class="read-more"
+                href="{% url 'content:article_detail' slug=article.slug %}"
+            >
+                Read article <span aria-hidden="true">→</span>
             </a>
-            <p>{{ article.category.name }}</p>
-            <p>{{ article.created_at|date:"Y-m-d" }}</p>
         </article>
     {% empty %}
-        <p>No published articles yet.</p>
+        <div class="empty-state">
+            <h2>No articles yet</h2>
+            <p>Published articles will appear here. Check back soon.</p>
+        </div>
     {% endfor %}
-    <nav aria-label="Article pagination">
-    {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
-    {% endif %}
+</section>
 
-    <span>
-        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-    </span>
+{% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pagination" aria-label="Article pagination">
+        {% if page_obj.has_previous %}
+            <a
+                class="pagination-link"
+                href="?page={{ page_obj.previous_page_number }}"
+            >
+                ← Previous
+            </a>
+        {% endif %}
 
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">Next</a>
-    {% endif %}
-</nav>
-</body>
-</html>
+        <span class="pagination-status">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a
+                class="pagination-link"
+                href="?page={{ page_obj.next_page_number }}"
+            >
+                Next →
+            </a>
+        {% endif %}
+    </nav>
+{% endif %}
+{% endblock %}

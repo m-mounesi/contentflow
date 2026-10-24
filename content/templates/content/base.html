@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="{% block meta_description %}ContentFlow — thoughtful articles on technology and development.{% endblock %}">
+
+    <title>{% block title %}ContentFlow | Ideas worth sharing{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'content/css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="{% url 'content:article_list' %}">
+                Content<span>Flow</span>
+            </a>
+
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="{% url 'content:article_list' %}">Articles</a>
+                <a href="#about">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer" id="about">
+        <div class="container footer-inner">
+            <a class="brand footer-brand" href="{% url 'content:article_list' %}">
+                Content<span>Flow</span>
+            </a>
+            <p>A space for ideas, knowledge, and thoughtful writing.</p>
+            <small>&copy; {% now "Y" %} ContentFlow</small>
+        </div>
+    </footer>
+</body>
+</html>

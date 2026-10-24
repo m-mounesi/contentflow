@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ article.title }} | ContentFlow</title>
+</head>
+<body>
+    <article>
+        <h1>{{ article.title }}</h1>
+
+        <p>
+            Category: {{ article.category.name }}
+        </p>
+
+        <p>
+            Published: {{ article.created_at|date:"Y-m-d" }}
+        </p>
+
+        <div>
+            {{ article.body|linebreaks }}
+        </div>
+    </article>
+
+    <a href="{% url 'content:article_list' %}">
+        Back to articles
+    </a>
+</body>
+</html>

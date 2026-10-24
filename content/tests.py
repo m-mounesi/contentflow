@@ -131,6 +131,37 @@ class ArticleViewTests(TestCase):
         self.assertContains(response, "Django Basics")
         self.assertNotContains(response, "Draft Article")
 
+    def test_article_list_pagination(self):
+        Article.objects.all().delete()
+        
+        Article.objects.bulk_create([
+            Article(
+                title=f"Article {i}",
+                slug=f"article-{i}",
+                body="Test body",
+                category=self.category,
+                status=Article.Status.PUBLISHED,
+            )
+            for i in range(12)
+        ])
+
+        response = self.client.get(
+            reverse("content:article_list")
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["page_obj"]), 10)
+        self.assertTrue(response.context["page_obj"].has_next())
+
+        response = self.client.get(
+            reverse("content:article_list"),
+            {"page": 2},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["page_obj"]), 2)
+        self.assertFalse(response.context["page_obj"].has_next())
+
     def test_article_detail_shows_published_article(self):
         response = self.client.get(
             reverse(

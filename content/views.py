@@ -1,17 +1,20 @@
 from django.shortcuts import get_object_or_404, render
+from django.core.paginator import Paginator
 
 from .models import Article
 
 
 def article_list(request):
-    articles = Article.objects.filter(
-        status=Article.Status.PUBLISHED
-    )
+    articles = Article.objects.filter(status=Article.Status.PUBLISHED)
+
+    paginator = Paginator(articles, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     return render(
         request,
         "content/article_list.html",
-        {"articles": articles},
+        {"page_obj": page_obj},
     )
 
 

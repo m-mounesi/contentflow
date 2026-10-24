@@ -7,7 +7,7 @@
 <body>
     <h1>Articles</h1>
 
-    {% for article in articles %}
+    {% for article in page_obj %}
         <article>
             <a href="{% url 'content:article_detail' slug=article.slug %}">
                 <h2>{{ article.title }}</h2>
@@ -18,5 +18,18 @@
     {% empty %}
         <p>No published articles yet.</p>
     {% endfor %}
+    <nav aria-label="Article pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    <span>
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+    {% endif %}
+</nav>
 </body>
 </html>

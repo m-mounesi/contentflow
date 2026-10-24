@@ -1,0 +1,21 @@
+# Virtual Environment
+.venv/
+venv/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.exemple
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+
+# Editors
+.vscode/
+.idea/
+
+# Operating system
+.DS_Store
+

@@ -19,3 +19,7 @@ staticfiles/
 # Operating system
 .DS_Store
 
+# Python Cach files
+__pycache__/
+*.py[cod]
+

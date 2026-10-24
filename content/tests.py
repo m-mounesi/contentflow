@@ -61,6 +61,40 @@ class ArticleModelsTests(TestCase):
                     category=self.category,
                 )
 
+    def test_publishing_article_sets_published_at(self):
+        article = Article.objects.create(
+            title="Publish Me",
+            slug="publish-me",
+            body="Content",
+            category=self.category,
+        )
+
+        self.assertIsNone(article.published_at)
+
+        article.status = Article.Status.PUBLISHED
+        article.save()
+
+        self.assertIsNotNone(article.published_at)
+
+
+    def test_editing_published_article_preserves_published_at(self):
+        article = Article.objects.create(
+            title="Published Article",
+            slug="published-article",
+            body="Content",
+            category=self.category,
+            status=Article.Status.PUBLISHED,
+        )
+
+        original_published_at = article.published_at
+
+        article.title = "Updated Title"
+        article.save()
+
+        self.assertEqual(
+            article.published_at,
+            original_published_at,
+        )
 
 
 
@@ -128,3 +162,5 @@ class ArticleViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
+
+

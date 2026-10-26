@@ -1,0 +1,283 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#F7F7F5">
+
+    <title>{% block title %}ContentFlow — ایده‌هایی برای توسعه‌دهندگان کنجکاو{% endblock %}</title>
+
+    <meta name="description"
+          content="{% block meta_description %}یادداشت‌هایی درباره فناوری، نرم‌افزار و ساختن چیزها.{% endblock %}">
+
+    <!-- Vazirmatn Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              bg: '#F7F7F5',
+              surface: '#FFFFFF',
+              'surface-soft': '#F0F0ED',
+              ink: '#171717',
+              text: '#242424',
+              muted: '#707070',
+              border: '#E3E3DF',
+              accent: '#6258E8',
+              'accent-hover': '#4E45CC',
+              'accent-soft': '#EEEDFF',
+              'code-bg': '#191A22',
+              'code-text': '#F2F2F5',
+              danger: '#B42318'
+            },
+            fontFamily: {
+              sans: ['Vazirmatn', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+              mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+            },
+            boxShadow: {
+              card: '0 8px 28px rgba(23, 23, 23, 0.045)',
+              'card-hover': '0 14px 36px rgba(23, 23, 23, 0.08)',
+              glass: '0 12px 40px rgba(23, 23, 23, 0.08)'
+            },
+            borderRadius: {
+              'ds-sm': '8px',
+              'ds-md': '14px',
+              'ds-lg': '20px'
+            }
+          }
+        }
+      }
+    </script>
+
+    <style>
+      html, body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+      body { font-family: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif; }
+
+      .glass {
+        background: rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border: 1px solid rgba(255, 255, 255, 0.65);
+      }
+      .glass-strong {
+        background: rgba(255, 255, 255, 0.72);
+        backdrop-filter: blur(24px) saturate(170%);
+        -webkit-backdrop-filter: blur(24px) saturate(170%);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+      }
+      .glass-dark {
+        background: rgba(23, 23, 23, 0.55);
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .focus-ring:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px #F7F7F5, 0 0 0 4px rgba(98, 88, 232, 0.6);
+      }
+
+      /* Reveal-on-scroll */
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.22,.61,.36,1);
+        will-change: opacity, transform;
+      }
+      .reveal.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.001ms !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+        .reveal { opacity: 1; transform: none; }
+      }
+
+      /* Decorative blobs are injected globally in base */
+      .site-blobs {
+        position: fixed; inset: 0; z-index: -10; pointer-events: none; overflow: hidden;
+      }
+
+      /* ===== Article body typography ===== */
+.article-body { color: #242424; line-height: 1.85; font-size: 1.0625rem; }
+.article-body > * + * { margin-top: 1.35rem; }
+.article-body h2 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; color: #171717; margin-top: 2.25rem; line-height: 1.5; }
+.article-body h3 { font-size: 1.2rem; font-weight: 700; color: #171717; margin-top: 1.75rem; line-height: 1.6; }
+.article-body a { color: #6258E8; text-decoration: underline; text-underline-offset: 3px; }
+.article-body a:hover { color: #4E45CC; }
+.article-body strong { color: #171717; font-weight: 700; }
+.article-body ul { list-style: disc; padding-inline-start: 1.5rem; }
+.article-body ol { list-style: decimal; padding-inline-start: 1.5rem; }
+.article-body li { margin-top: 0.5rem; }
+.article-body blockquote {
+  border-inline-start: 3px solid #6258E8;
+  padding-inline: 1rem;
+  color: #707070;
+  font-style: italic;
+  background: rgba(238, 237, 255, 0.4);
+  padding-block: 0.75rem;
+  border-radius: 8px;
+}
+.article-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: rgba(98, 88, 232, 0.10);
+  color: #4E45CC;
+  padding: 0.15em 0.45em;
+  border-radius: 6px;
+  font-size: 0.92em;
+  direction: ltr;
+  display: inline-block;
+}
+.article-body pre {
+  background: #191A22;
+  color: #F2F2F5;
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  overflow-x: auto;
+  direction: ltr;
+  text-align: left;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  border: 1px solid rgba(255,255,255,0.06);
+  margin-top: 1.5rem;
+}
+.article-body pre code {
+  background: transparent; color: inherit; padding: 0; font-size: inherit; display: inline;
+}
+
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col bg-bg text-text font-sans antialiased overflow-x-hidden">
+
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-[100] focus:rounded-md focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white">پرش به محتوا</a>
+
+    <!-- Global decorative blobs -->
+    <div class="site-blobs" aria-hidden="true">
+        <div class="absolute -top-40 -right-40 h-[420px] w-[420px] rounded-full bg-accent/15 blur-[120px]"></div>
+        <div class="absolute top-1/3 -left-40 h-[380px] w-[380px] rounded-full bg-accent-soft blur-[120px]"></div>
+        <div class="absolute -bottom-40 right-1/3 h-[420px] w-[420px] rounded-full bg-accent/10 blur-[120px]"></div>
+    </div>
+
+    <!-- ============ Header ============ -->
+    <header class="sticky top-0 z-50 px-4 sm:px-5 lg:px-8 pt-4">
+      <div class="mx-auto max-w-[1120px]">
+        <div class="glass rounded-ds-lg shadow-card">
+          <div class="flex h-16 md:h-[72px] items-center justify-between px-4 sm:px-6">
+            <a href="{% url 'content:home' %}" class="focus-ring rounded-md text-xl md:text-2xl font-black tracking-tight text-ink" aria-label="ContentFlow home">
+              Content<span class="text-accent">Flow</span>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium" aria-label="Main navigation">
+              <a href="{% url 'content:home' %}#latest-articles" class="focus-ring rounded-md text-text/80 hover:text-accent transition-colors">تازه‌ها</a>
+              <a href="{% url 'content:article_list' %}" class="focus-ring rounded-md text-text/80 hover:text-accent transition-colors">آرشیو مقالات</a>
+              <a href="#site-footer" class="focus-ring rounded-md text-text/80 hover:text-accent transition-colors">درباره</a>
+            </nav>
+
+            <button id="menuToggle" type="button" aria-label="باز کردن منو" aria-expanded="false"
+                    class="focus-ring md:hidden inline-flex h-10 w-10 items-center justify-center rounded-ds-md text-ink hover:bg-white/50 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+              </svg>
+            </button>
+          </div>
+
+          <div id="mobileMenu" class="hidden md:hidden border-t border-white/50 px-4 py-3">
+            <nav class="flex flex-col gap-1 text-sm font-medium" aria-label="Mobile navigation">
+              <a href="{% url 'content:home' %}#latest-articles" class="rounded-ds-md px-3 py-2.5 text-text/80 hover:bg-white/60 hover:text-accent transition-colors">تازه‌ها</a>
+              <a href="{% url 'content:article_list' %}" class="rounded-ds-md px-3 py-2.5 text-text/80 hover:bg-white/60 hover:text-accent transition-colors">آرشیو مقالات</a>
+              <a href="#site-footer" class="rounded-ds-md px-3 py-2.5 text-text/80 hover:bg-white/60 hover:text-accent transition-colors">درباره</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ Main ============ -->
+    <main id="main-content" class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ============ Footer ============ -->
+    <footer class="bg-ink text-white/70 mt-8" id="site-footer">
+      <div class="mx-auto max-w-[1120px] px-5 lg:px-8 py-12 md:py-16">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-12">
+          <div class="max-w-sm">
+            <a href="{% url 'content:home' %}" class="focus-ring inline-block rounded-md text-2xl font-black tracking-tight text-white">
+              Content<span class="text-accent-soft">Flow</span>
+            </a>
+            <p class="mt-4 text-sm leading-relaxed text-white/60">
+              فضایی برای ایده‌های روشن، درس‌های کاربردی و جزئیاتی که پشت کدها پنهان است.
+            </p>
+          </div>
+          <nav class="flex flex-wrap gap-x-8 gap-y-3 text-sm" aria-label="ناوبری پاورقی">
+            <a href="{% url 'content:home' %}#latest-articles" class="focus-ring rounded-sm hover:text-white transition-colors">تازه‌ها</a>
+            <a href="{% url 'content:article_list' %}" class="focus-ring rounded-sm hover:text-white transition-colors">آرشیو مقالات</a>
+            <a href="#" class="focus-ring rounded-sm hover:text-white transition-colors">درباره</a>
+          </nav>
+        </div>
+        <div class="mt-10 pt-6 border-t border-white/10 flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-white/40">
+          <span>© {% now "Y" %} ContentFlow. همه حقوق محفوظ است.</span>
+          <span>ساخته‌شده با دقت و سادگی.</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- jQuery + global scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+      $(function () {
+        var $menu = $('#mobileMenu');
+        var $toggle = $('#menuToggle');
+
+        // Mobile menu
+        $toggle.on('click', function () {
+          $menu.stop(true, true).slideToggle(180);
+          $toggle.attr('aria-expanded', function (_, v) { return v !== 'true'; });
+        });
+
+        // Smooth scroll for same-page anchors
+        $('a[href^="#"]').on('click', function (e) {
+          var target = $(this).attr('href');
+          if (target && target.length > 1 && $(target).length) {
+            e.preventDefault();
+            var top = $(target).offset().top - 90;
+            $('html, body').animate({ scrollTop: top }, 450);
+            $menu.slideUp(180);
+            $toggle.attr('aria-expanded', 'false');
+          }
+        });
+
+        // Reveal-on-scroll (respect reduced motion)
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!reduceMotion && 'IntersectionObserver' in window) {
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                io.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+          $('.reveal').each(function () { io.observe(this); });
+        } else {
+          $('.reveal').addClass('is-visible');
+        }
+
+        {% block extra_scripts %}{% endblock %}
+      });
+    </script>
+</body>
+</html>

@@ -1,7 +1,9 @@
 from django.test import TestCase
 from django.db import IntegrityError, transaction
-
 from django.urls import reverse
+from django.utils.dateformat import format as date_format
+from django.utils import timezone
+from datetime import timedelta
 
 from .models import Article, Category
 
@@ -122,12 +124,75 @@ class ArticleViewTests(TestCase):
             status=Article.Status.DRAFT,
         )
 
+    def test_home_shows_three_most_recent_published_articles(self):
+        now = timezone.now()
+        self.published_article.published_at = now - timedelta(days=2)
+        self.published_article.save(update_fields=["published_at"])
+
+        older_article = Article.objects.create(
+            title="Older Article",
+            slug="older-article",
+            body="Older published content.",
+            category=self.category,
+            status=Article.Status.PUBLISHED,
+            published_at=now - timedelta(days=3),
+        )
+        second_article = Article.objects.create(
+            title="Second Article",
+            slug="second-article",
+            body="Second published content.",
+            category=self.category,
+            status=Article.Status.PUBLISHED,
+            published_at=now - timedelta(days=1),
+        )
+        newest_article = Article.objects.create(
+            title="Newest Article",
+            slug="newest-article",
+            body="Newest published content.",
+            category=self.category,
+            status=Article.Status.PUBLISHED,
+            published_at=now - timedelta(hours=1),
+        )
+
+        response = self.client.get(reverse("content:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(reverse("content:home"), "/")
+        self.assertEqual(
+            [article.title for article in response.context["articles"]],
+            ["Newest Article", "Second Article", "Django Basics"],
+        )
+        self.assertContains(response, self.category.name)
+        self.assertContains(
+            response,
+            date_format(newest_article.published_at, "M j, Y"),
+        )
+        for article in (newest_article, second_article, self.published_article):
+            self.assertContains(response, article.title)
+            self.assertContains(
+                response,
+                reverse("content:article_detail", kwargs={"slug": article.slug}),
+            )
+        self.assertNotContains(response, older_article.title)
+        self.assertNotContains(response, self.draft_article.title)
+
+    def test_home_shows_empty_state_when_no_articles_are_published(self):
+        Article.objects.all().delete()
+
+        response = self.client.get(reverse("content:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "هنوز هیچ مقاله‌ای منتشر نشده است.")
+        self.assertEqual(list(response.context["articles"]), [])
+
     def test_article_list_shows_published_articles(self):
         response = self.client.get(
             reverse("content:article_list")
         )
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(reverse("content:article_list"), "/articles/")
+        self.assertTemplateUsed(response, "pages/article_list.html")
         self.assertContains(response, "Django Basics")
         self.assertNotContains(response, "Draft Article")
 
@@ -193,5 +258,3 @@ class ArticleViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
-
-

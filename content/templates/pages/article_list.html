@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}آرشیو مقالات — ContentFlow{% endblock %}
+
+{% block meta_description %}همه‌ی مقالات منتشرشده‌ی ContentFlow درباره فناوری، نرم‌افزار و ساختن چیزها.{% endblock %}
+
+{% block content %}
+<section class="px-4 sm:px-5 lg:px-8 py-14 md:py-20">
+  <div class="mx-auto max-w-[1120px]">
+    <div class="mb-10 md:mb-14">
+      <p class="text-[11px] font-semibold tracking-[0.2em] text-muted uppercase">دفترچه</p>
+      <h1 class="mt-2 text-3xl md:text-4xl font-black tracking-tight text-ink">
+        آرشیو مقالات<span class="text-accent">.</span>
+      </h1>
+    </div>
+
+    {% if page_obj.object_list %}
+      <div class="grid grid-cols-1 min-[640px]:grid-cols-2 min-[900px]:grid-cols-3 gap-5 md:gap-6">
+        {% for article in page_obj %}
+          <article class="glass rounded-ds-lg shadow-card p-6 md:p-7 flex flex-col">
+            <span class="inline-flex items-center rounded-full bg-accent-soft text-accent text-[11px] font-semibold px-3 py-1 w-fit">
+              {{ article.category.name }}
+            </span>
+            <h2 class="mt-4 text-xl md:text-[22px] font-bold leading-snug tracking-tight text-ink">
+              <a href="{% url 'content:article_detail' slug=article.slug %}" class="focus-ring rounded-sm hover:text-accent transition-colors break-words">
+                {{ article.title }}
+              </a>
+            </h2>
+            <p class="mt-3 text-sm leading-relaxed text-muted line-clamp-3">
+              {{ article.body|striptags|truncatewords:24 }}
+            </p>
+            <div class="mt-5 pt-4 border-t border-white/60">
+              {% if article.published_at %}
+                <time datetime="{{ article.published_at|date:'c' }}" class="text-xs text-muted">
+                  {{ article.published_at|date:"M j, Y" }}
+                </time>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="glass rounded-ds-lg shadow-card p-10 md:p-14 text-center">
+        <h2 class="text-xl md:text-2xl font-bold text-ink">هنوز هیچ مقاله‌ای منتشر نشده است.</h2>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

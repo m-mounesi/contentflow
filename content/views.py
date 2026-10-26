@@ -1,11 +1,26 @@
+
 from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator
 
 from .models import Article
 
 
+def main_page(request):
+    articles = Article.objects.filter(
+        status=Article.Status.PUBLISHED
+    ).order_by("-published_at", "-pk")[:3]
+
+    return render(
+        request,
+        "pages/home.html",
+        {"articles": articles},
+    )
+
+
 def article_list(request):
-    articles = Article.objects.filter(status=Article.Status.PUBLISHED)
+    articles = Article.objects.filter(
+        status=Article.Status.PUBLISHED
+    ).order_by("-published_at")
 
     paginator = Paginator(articles, 10)
     page_number = request.GET.get("page")
@@ -13,7 +28,7 @@ def article_list(request):
 
     return render(
         request,
-        "content/article_list.html",
+        "pages/article_list.html",
         {"page_obj": page_obj},
     )
 
@@ -27,6 +42,6 @@ def article_detail(request, slug):
 
     return render(
         request,
-        "content/article_detail.html",
+        "pages/article_detail.html",
         {"article": article},
     )

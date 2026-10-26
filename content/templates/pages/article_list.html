@@ -39,6 +39,41 @@
           </article>
         {% endfor %}
       </div>
+
+      {% if page_obj.has_other_pages %}
+        <nav class="mt-10 flex flex-wrap items-center justify-center gap-2" aria-label="صفحه‌بندی مقالات">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}"
+               class="focus-ring rounded-ds-md bg-white/60 px-4 py-2 text-sm font-semibold text-text hover:bg-white/80 transition-colors"
+               aria-label="صفحه قبلی">
+              قبلی
+            </a>
+          {% endif %}
+
+          {% for page_number in page_obj.paginator.page_range %}
+            {% if page_number == page_obj.number %}
+              <span class="inline-flex h-10 min-w-10 items-center justify-center rounded-ds-md bg-accent px-3 text-sm font-semibold text-white"
+                    aria-current="page">
+                {{ page_number }}
+              </span>
+            {% else %}
+              <a href="?page={{ page_number }}"
+                 class="focus-ring inline-flex h-10 min-w-10 items-center justify-center rounded-ds-md bg-white/60 px-3 text-sm font-semibold text-text hover:bg-white/80 transition-colors"
+                 aria-label="صفحه {{ page_number }}">
+                {{ page_number }}
+              </a>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"
+               class="focus-ring rounded-ds-md bg-white/60 px-4 py-2 text-sm font-semibold text-text hover:bg-white/80 transition-colors"
+               aria-label="صفحه بعدی">
+              بعدی
+            </a>
+          {% endif %}
+        </nav>
+      {% endif %}
     {% else %}
       <div class="glass rounded-ds-lg shadow-card p-10 md:p-14 text-center">
         <h2 class="text-xl md:text-2xl font-bold text-ink">هنوز هیچ مقاله‌ای منتشر نشده است.</h2>

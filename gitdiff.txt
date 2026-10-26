@@ -1,0 +1,129 @@
+diff --git a/config/urls.py b/config/urls.py
+index f0e67be..e227e5c 100644
+--- a/config/urls.py
++++ b/config/urls.py
+@@ -15,8 +15,7 @@ Including another URLconf
+     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+ """
+ from django.contrib import admin
+-from django.urls import path, include
+-
++from django.urls import include, path
+ 
+ urlpatterns = [
+     path('admin/', admin.site.urls),
+diff --git a/content/admin.py b/content/admin.py
+index 2f782e9..02fa395 100644
+--- a/content/admin.py
++++ b/content/admin.py
+@@ -3,7 +3,6 @@ from django.contrib import admin
+ from .models import Article, Category
+ 
+ 
+-
+ @admin.register(Category)
+ class CategoryAdmin(admin.ModelAdmin):
+     list_display= ("name", "slug", "created_at")
+diff --git a/content/models.py b/content/models.py
+index 573da3c..2d0fe36 100644
+--- a/content/models.py
++++ b/content/models.py
+@@ -1,5 +1,6 @@
+ from django.db import models
+ from django.utils import timezone
++
+ # Create your models here.
+ 
+ class Category(models.Model):
+diff --git a/content/templates/base.html b/content/templates/base.html
+index 37dcb45..c959b13 100644
+--- a/content/templates/base.html
++++ b/content/templates/base.html
+@@ -187,7 +187,7 @@
+ 
+             <button id="menuToggle" type="button" aria-label="باز کردن منو" aria-expanded="false"
+                     class="focus-ring md:hidden inline-flex h-10 w-10 items-center justify-center rounded-ds-md text-ink hover:bg-white/50 transition-colors">
+-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
++              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                 <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+               </svg>
+             </button>
+@@ -276,7 +276,6 @@
+           $('.reveal').addClass('is-visible');
+         }
+ 
+-        {% block extra_scripts %}{% endblock %}
+       });
+     </script>
+ </body>
+diff --git a/content/tests.py b/content/tests.py
+index 86ed62e..91b7d7d 100644
+--- a/content/tests.py
++++ b/content/tests.py
+@@ -1,14 +1,14 @@
+-from django.test import TestCase
++from datetime import timedelta
++
+ from django.db import IntegrityError, transaction
++from django.test import TestCase
+ from django.urls import reverse
+-from django.utils.dateformat import format as date_format
+ from django.utils import timezone
+-from datetime import timedelta
++from django.utils.dateformat import format as date_format
+ 
+ from .models import Article, Category
+ 
+ 
+-
+ class CategoryModelTests(TestCase):
+     def test_category_str_returns_name(self):
+         category= Category.objects.create(
+@@ -54,14 +54,13 @@ class ArticleModelsTests(TestCase):
+             category=self.category,
+         )
+ 
+-        with self.assertRaises(IntegrityError):
+-            with transaction.atomic():
+-                Article.objects.create(
+-                    title="Second Article",
+-                    slug="same-slug",
+-                    body="Second body.",
+-                    category=self.category,
+-                )
++        with self.assertRaises(IntegrityError), transaction.atomic():
++            Article.objects.create(
++                title="Second Article",
++                slug="same-slug",
++                body="Second body.",
++                category=self.category,
++            )
+ 
+     def test_publishing_article_sets_published_at(self):
+         article = Article.objects.create(
+diff --git a/content/urls.py b/content/urls.py
+index 1b9c8f8..931a30f 100644
+--- a/content/urls.py
++++ b/content/urls.py
+@@ -1,8 +1,7 @@
+ 
+ from django.urls import path
+ 
+-from .views import main_page, article_list, article_detail
+-
++from .views import article_detail, article_list, main_page
+ 
+ app_name = "content"
+ 
+diff --git a/content/views.py b/content/views.py
+index 114b394..313952a 100644
+--- a/content/views.py
++++ b/content/views.py
+@@ -1,6 +1,6 @@
+ 
+-from django.shortcuts import get_object_or_404, render
+ from django.core.paginator import Paginator
++from django.shortcuts import get_object_or_404, render
+ 
+ from .models import Article
+ 

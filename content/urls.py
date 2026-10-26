@@ -1,8 +1,7 @@
 
 from django.urls import path
 
-from .views import main_page, article_list, article_detail
-
+from .views import article_detail, article_list, main_page
 
 app_name = "content"
 

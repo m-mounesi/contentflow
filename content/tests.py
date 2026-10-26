@@ -1,12 +1,12 @@
-from django.test import TestCase
-from django.db import IntegrityError, transaction
-from django.urls import reverse
-from django.utils.dateformat import format as date_format
-from django.utils import timezone
 from datetime import timedelta
 
-from .models import Article, Category
+from django.db import IntegrityError, transaction
+from django.test import TestCase
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.dateformat import format as date_format
 
+from .models import Article, Category
 
 
 class CategoryModelTests(TestCase):
@@ -54,14 +54,13 @@ class ArticleModelsTests(TestCase):
             category=self.category,
         )
 
-        with self.assertRaises(IntegrityError):
-            with transaction.atomic():
-                Article.objects.create(
-                    title="Second Article",
-                    slug="same-slug",
-                    body="Second body.",
-                    category=self.category,
-                )
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            Article.objects.create(
+                title="Second Article",
+                slug="same-slug",
+                body="Second body.",
+                category=self.category,
+            )
 
     def test_publishing_article_sets_published_at(self):
         article = Article.objects.create(

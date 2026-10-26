@@ -1,0 +1,8 @@
+
+
+
+
+[tool.ruff.lint.per-file-ignores]
+"content/admin.py" = ["RUF012"]
+"content/models.py" = ["RUF012"]
+"content/migrations/*.py" = ["RUF012"]

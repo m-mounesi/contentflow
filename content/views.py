@@ -2,18 +2,22 @@
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
 
-from .models import Article
+from .models import Article, Category
 
 
 def main_page(request):
     articles = Article.objects.filter(
         status=Article.Status.PUBLISHED
     ).order_by("-published_at", "-pk")[:3]
+    categories = Category.objects.order_by("name")
 
     return render(
         request,
         "pages/home.html",
-        {"articles": articles},
+        {
+            "articles": articles,
+            "categories": categories,
+        },
     )
 
 

@@ -184,6 +184,26 @@ class ArticleViewTests(TestCase):
         self.assertContains(response, "هنوز هیچ مقاله‌ای منتشر نشده است.")
         self.assertEqual(list(response.context["articles"]), [])
 
+    def test_home_shows_categories(self):
+        Category.objects.create(name="Python", slug="python")
+        Category.objects.create(name="Design", slug="design")
+
+        response = self.client.get(reverse("content:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Python")
+        self.assertContains(response, "Design")
+        self.assertContains(response, "دسته‌بندی‌ها")
+
+    def test_home_shows_empty_categories_state(self):
+        Article.objects.all().delete()
+        Category.objects.all().delete()
+
+        response = self.client.get(reverse("content:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "هنوز دسته‌بندی‌ای اضافه نشده است.")
+
     def test_article_list_shows_published_articles(self):
         response = self.client.get(
             reverse("content:article_list")

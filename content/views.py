@@ -20,6 +20,24 @@ def main_page(request):
         },
     )
 
+def category_detail(request, slug):
+    category = get_object_or_404(Category, slug= slug)
+
+    articles = Article.objects.filter(
+        category=category,
+        status='published'
+    )
+
+    paginator= Paginator(articles, 20)
+    page_number= request.GET.get("page")
+    page_obj= paginator.get_page(page_number)
+
+    return render(
+        request,
+        "pages/category_detail.html",
+        {"category":category,
+         "page_obj": page_obj}
+    )
 
 def article_list(request):
     articles = Article.objects.filter(

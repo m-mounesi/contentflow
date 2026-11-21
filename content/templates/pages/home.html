@@ -140,7 +140,7 @@
         {% for category in categories %}
           <div class="reveal glass rounded-ds-lg shadow-card p-5 md:p-6">
             <span class="inline-flex items-center rounded-full bg-accent-soft text-accent text-[11px] font-semibold px-3 py-1">
-              {{ category.name }}
+              <a href="{% url 'content:category_detail' category.slug %}">{{ category.name }}</a>
             </span>
           </div>
         {% endfor %}

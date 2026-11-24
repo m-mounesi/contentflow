@@ -11,9 +11,9 @@ from .models import Article, Category
 
 class CategoryModelTests(TestCase):
     def test_category_str_returns_name(self):
-        category= Category.objects.create(
-            name = "Technology",
-            slug= "technology"
+        category = Category.objects.create(
+            name="Technology",
+            slug="technology",
         )
 
         self.assertEqual(str(category), "Technology")
@@ -26,50 +26,33 @@ class ArticleModelsTests(TestCase):
             slug="technology",
         )
 
-    def test_article_str_returns_title(self):
-        article = Article.objects.create(
-            title="Django Basics",
-            slug="django-basics",
-            body="Introduction to Django.",
-            category=self.category,
-        )
+    def create_article(self, **kwargs):
+        defaults = {
+            "title": "Test Article",
+            "slug": "test-article",
+            "body": "Article content.",
+            "category": self.category,
+        }
+        defaults.update(kwargs)
+        return Article.objects.create(**defaults)
 
+    def test_article_str_returns_title(self):
+        article = self.create_article(title="Django Basics")
         self.assertEqual(str(article), "Django Basics")
 
     def test_article_defaults_to_draft(self):
-        article= Article.objects.create(
-            title="New Article",
-            slug="new-article",
-            body="Article content.",
-            category=self.category,
-        )
-
+        article = self.create_article()
         self.assertEqual(article.status, Article.Status.DRAFT)
+        self.assertIsNone(article.published_at)
 
     def test_article_slug_must_be_unique(self):
-        Article.objects.create(
-            title="First Article",
-            slug="same-slug",
-            body="First body.",
-            category=self.category,
-        )
+        self.create_article(slug="same-slug")
 
         with self.assertRaises(IntegrityError), transaction.atomic():
-            Article.objects.create(
-                title="Second Article",
-                slug="same-slug",
-                body="Second body.",
-                category=self.category,
-            )
+            self.create_article(title="Second Article", slug="same-slug")
 
     def test_publishing_article_sets_published_at(self):
-        article = Article.objects.create(
-            title="Publish Me",
-            slug="publish-me",
-            body="Content",
-            category=self.category,
-        )
-
+        article = self.create_article()
         self.assertIsNone(article.published_at)
 
         article.status = Article.Status.PUBLISHED
@@ -77,27 +60,60 @@ class ArticleModelsTests(TestCase):
 
         self.assertIsNotNone(article.published_at)
 
+    def test_publishing_with_update_fields_persists_published_at(self):
+        article = self.create_article()
+        article.status = Article.Status.PUBLISHED
+        article.save(update_fields=["status"])
+
+        article.refresh_from_db()
+        self.assertEqual(article.status, Article.Status.PUBLISHED)
+        self.assertIsNotNone(article.published_at)
 
     def test_editing_published_article_preserves_published_at(self):
-        article = Article.objects.create(
-            title="Published Article",
-            slug="published-article",
-            body="Content",
-            category=self.category,
-            status=Article.Status.PUBLISHED,
-        )
-
+        article = self.create_article(status=Article.Status.PUBLISHED)
         original_published_at = article.published_at
 
         article.title = "Updated Title"
         article.save()
 
-        self.assertEqual(
-            article.published_at,
-            original_published_at,
-        )
+        self.assertEqual(article.published_at, original_published_at)
 
+    def test_partial_save_without_status_does_not_persist_unsaved_status(self):
+        article = self.create_article()
+        article.status = Article.Status.PUBLISHED
+        article.title = "Updated Title"
+        article.save(update_fields=["title"])
 
+        article.refresh_from_db()
+        self.assertEqual(article.status, Article.Status.DRAFT)
+        self.assertIsNone(article.published_at)
+
+    def test_unpublishing_clears_published_at(self):
+        article = self.create_article(status=Article.Status.PUBLISHED)
+        self.assertIsNotNone(article.published_at)
+
+        article.status = Article.Status.DRAFT
+        article.save(update_fields=["status"])
+
+        article.refresh_from_db()
+        self.assertEqual(article.status, Article.Status.DRAFT)
+        self.assertIsNone(article.published_at)
+
+    def test_republishing_sets_a_new_published_at(self):
+        article = self.create_article(status=Article.Status.PUBLISHED)
+        first_published_at = article.published_at
+
+        article.status = Article.Status.DRAFT
+        article.save(update_fields=["status"])
+        article.refresh_from_db()
+        self.assertIsNone(article.published_at)
+
+        article.status = Article.Status.PUBLISHED
+        article.save(update_fields=["status"])
+        article.refresh_from_db()
+
+        self.assertIsNotNone(article.published_at)
+        self.assertGreaterEqual(article.published_at, first_published_at)
 
 
 class ArticleViewTests(TestCase):
@@ -205,9 +221,7 @@ class ArticleViewTests(TestCase):
         self.assertContains(response, "هنوز دسته‌بندی‌ای اضافه نشده است.")
 
     def test_article_list_shows_published_articles(self):
-        response = self.client.get(
-            reverse("content:article_list")
-        )
+        response = self.client.get(reverse("content:article_list"))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(reverse("content:article_list"), "/articles/")
@@ -217,7 +231,7 @@ class ArticleViewTests(TestCase):
 
     def test_article_list_pagination(self):
         Article.objects.all().delete()
-        
+
         Article.objects.bulk_create([
             Article(
                 title=f"Article {i}",
@@ -229,18 +243,13 @@ class ArticleViewTests(TestCase):
             for i in range(12)
         ])
 
-        response = self.client.get(
-            reverse("content:article_list")
-        )
+        response = self.client.get(reverse("content:article_list"))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["page_obj"]), 10)
         self.assertTrue(response.context["page_obj"].has_next())
 
-        response = self.client.get(
-            reverse("content:article_list"),
-            {"page": 2},
-        )
+        response = self.client.get(reverse("content:article_list"), {"page": 2})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["page_obj"]), 2)
@@ -248,10 +257,7 @@ class ArticleViewTests(TestCase):
 
     def test_article_detail_shows_published_article(self):
         response = self.client.get(
-            reverse(
-                "content:article_detail",
-                kwargs={"slug": "django-basics"},
-            )
+            reverse("content:article_detail", kwargs={"slug": "django-basics"})
         )
 
         self.assertEqual(response.status_code, 200)
@@ -260,20 +266,80 @@ class ArticleViewTests(TestCase):
 
     def test_draft_article_detail_returns_404(self):
         response = self.client.get(
-            reverse(
-                "content:article_detail",
-                kwargs={"slug": "draft-article"},
-            )
+            reverse("content:article_detail", kwargs={"slug": "draft-article"})
         )
 
         self.assertEqual(response.status_code, 404)
 
     def test_missing_article_returns_404(self):
         response = self.client.get(
-            reverse(
-                "content:article_detail",
-                kwargs={"slug": "does-not-exist"},
-            )
+            reverse("content:article_detail", kwargs={"slug": "does-not-exist"})
         )
 
         self.assertEqual(response.status_code, 404)
+
+    def test_category_detail_shows_published_articles_from_that_category(self):
+        response = self.client.get(
+                    reverse(
+                        "content:category_detail", 
+                        kwargs={"slug": self.category.slug}
+                )
+            )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.published_article.title)
+
+    def test_category_detail_does_not_show_draft_articles(self):
+        response = self.client.get(
+            reverse(
+                "content:category_detail", 
+                kwargs={"slug": self.category.slug}
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.draft_article.title)
+
+    def test_category_detail_does_not_show_articles_from_other_categories(self):
+        other_category = Category.objects.create(
+            name="Python",
+            slug="python",
+        )
+        now = timezone.now()
+        other_article = Article.objects.create(
+            title="third Article",
+            slug="third-article",
+            body="third published content.",
+            category= other_category,
+            status=Article.Status.PUBLISHED,
+            published_at=now - timedelta(days=1),
+        )
+        response = self.client.get(
+            reverse(
+                "content:category_detail",
+                kwargs={"slug": self.category.slug}
+            )
+        )
+        self.assertEqual(response.status_code, 200 )
+        self.assertNotContains(response, other_article.title)
+
+
+    def test_missing_category_returns_404(self):
+        response = self.client.get(
+            reverse(
+                "content:category_detail",
+                kwargs={"slug": "does-not-exist"}
+            )
+    )
+        
+        self.assertEqual(response.status_code, 404)
+
+    def test_category_returns_200_with_no_articles(self):
+        empty_category = Category.objects.create(
+            name="Empty-cat",
+            slug="empty-cat",
+        )
+        response= self.client.get(reverse("content:category_detail",
+                          kwargs= {"slug": empty_category.slug}
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "مقاله ای در این دسته بندی منتشر نشده است.")

@@ -277,3 +277,69 @@ class ArticleViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
+
+    def test_category_detail_shows_published_articles_from_that_category(self):
+        response = self.client.get(
+                    reverse(
+                        "content:category_detail", 
+                        kwargs={"slug": self.category.slug}
+                )
+            )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.published_article.title)
+
+    def test_category_detail_does_not_show_draft_articles(self):
+        response = self.client.get(
+            reverse(
+                "content:category_detail", 
+                kwargs={"slug": self.category.slug}
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.draft_article.title)
+
+    def test_category_detail_does_not_show_articles_from_other_categories(self):
+        other_category = Category.objects.create(
+            name="Python",
+            slug="python",
+        )
+        now = timezone.now()
+        other_article = Article.objects.create(
+            title="third Article",
+            slug="third-article",
+            body="third published content.",
+            category= other_category,
+            status=Article.Status.PUBLISHED,
+            published_at=now - timedelta(days=1),
+        )
+        response = self.client.get(
+            reverse(
+                "content:category_detail",
+                kwargs={"slug": self.category.slug}
+            )
+        )
+        self.assertEqual(response.status_code, 200 )
+        self.assertNotContains(response, other_article.title)
+
+
+    def test_missing_category_returns_404(self):
+        response = self.client.get(
+            reverse(
+                "content:category_detail",
+                kwargs={"slug": "does-not-exist"}
+            )
+    )
+        
+        self.assertEqual(response.status_code, 404)
+
+    def test_category_returns_200_with_no_articles(self):
+        empty_category = Category.objects.create(
+            name="Empty-cat",
+            slug="empty-cat",
+        )
+        response= self.client.get(reverse("content:category_detail",
+                          kwargs= {"slug": empty_category.slug}
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "مقاله ای در این دسته بندی منتشر نشده است.")

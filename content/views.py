@@ -25,7 +25,7 @@ def category_detail(request, slug):
 
     articles = Article.objects.filter(
         category=category,
-        status='published'
+        status=Article.Status.PUBLISHED
     )
 
     paginator= Paginator(articles, 20)
